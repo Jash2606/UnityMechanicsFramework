@@ -106,7 +106,7 @@ Before writing code, study at least one existing mechanic in the repository — 
 
 | Tool | Version |
 |---|---|
-| Unity | 2021.3 LTS or later (2022.3 LTS recommended) |
+| Unity | 2021.3 LTS or later (2022.3 LTS recommended) , any 6.0+ will also work  |
 | .NET | Compatible with Unity's built-in C# version |
 | Git | Latest stable |
 | IDE | Visual Studio / Rider / VS Code with Unity extension |
@@ -158,7 +158,7 @@ git checkout -b mechanic/your-mechanic-name
 Follow these steps **in order**. Skipping any step is grounds for a PR rejection.
 
 ```
-Step 1  ->  Open an Issue  (label: mechanic-proposal)  Describe what you want to build
+Step 1  ->  Open an Issue  (label: mechanic-proposal)  Describe what you want to build or pick an issue and ask to work on it 
 Step 2  ->  Fork the repository and set up locally
 Step 3  ->  Create a branch:  mechanic/your-mechanic-name
 Step 4  ->  Build your mechanic scripts inside  Runtime/
@@ -241,6 +241,7 @@ UnityMechanicsFramework/
 | Core base classes | `Runtime/Core/` | N/A (used by other mechanics) |
 | Helpers / Extensions | `Runtime/Utils/` | N/A |
 
+|Note : Only the script and demo video, code explainer be added here 
 ---
 
 ## 7. Mechanic Folder Structure
@@ -284,7 +285,7 @@ All scripts must use the base namespace `GameplayMechanicsUMFOSS` extended with 
 
 | Namespace | Use for |
 |---|---|
-| `GameplayMechanicsUMFOSS.Core` | Singletons, EventBus, StateMachine, base classes |
+| `GameplayMechanicsUMFOSS.Core` | Singletons, EventBus, StateMachine, base classes ,anything core to any game can be added here  |
 | `GameplayMechanicsUMFOSS.Movement` | Jump, dash, wall slide, swim, fly mechanics |
 | `GameplayMechanicsUMFOSS.Dialogue` | Dialogue nodes, databases, conversation systems |
 | `GameplayMechanicsUMFOSS.Inventory` | Items, loot, equipment, currency systems |
@@ -321,7 +322,7 @@ namespace GameplayMechanicsUMFOSS.Movement
 
 - **Never** use the global namespace (no namespace at all)
 - **Never** nest more than one level beyond the feature group
-- **Always** use PascalCase for class names
+- **Always** use PascalCase for class names , for the rest use camelCase
 - **Always** match the namespace to the `Runtime/` subfolder the script lives in
 
 ---
@@ -412,7 +413,7 @@ public void TriggerJump(float forceMultiplier = 1f)
 
 ## 10. Script Explainer Requirement
 
-Every mechanic must include a `ScriptExplainer.txt`. This is **mandatory and non-negotiable**.
+Every mechanic must include a `yourScriptNameExplainer.txt`. This is **mandatory and non-negotiable**.
 
 This file is what separates UnityMechanicsFramework from every other Unity GitHub repo. It transforms a script into a lesson.
 
@@ -533,7 +534,7 @@ Any screen recorder works. Recommended options:
 
 ### 12.3 Configuration instructions
 
-If any manual setup is genuinely required that cannot be avoided, include a `README.txt` inside your mechanic folder with numbered setup steps. Keep it as short as possible.
+If any manual setup is genuinely required that cannot be avoided, include a `README.txt` inside your mechanic folder with numbered setup steps or show it in the video on how to setup the prefab. Keep it as short as possible.
 
 ```
 SETUP INSTRUCTIONS - InventorySystem
@@ -857,7 +858,7 @@ Use this template when opening your PR:
 
 ### 15.4 What happens after you submit
 
-- A maintainer will review your PR within 7 days
+- A maintainer will review your PR within a week of submission
 - You may receive review comments requesting changes — respond and push updates to the same branch
 - Once approved, your mechanic will be merged and your README entry goes live immediately
 - Your name, GitHub profile link, and video will be permanently visible in the Mechanics Library to every developer who visits the repo
