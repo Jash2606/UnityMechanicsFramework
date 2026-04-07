@@ -17,8 +17,8 @@ namespace GameplayMechanicsUMFOSS.Physics
         // IPhysicsAdapter implementation
         public Vector3 Velocity
         {
-            get => (Vector3)rb.velocity;
-            set => rb.velocity = (Vector2)value;
+            get => (Vector3)rb.linearVelocity;
+            set => rb.linearVelocity = (Vector2)value;
         }
 
         public float GravityScale
