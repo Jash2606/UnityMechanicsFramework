@@ -1,18 +1,32 @@
 using UnityEngine;
 
-public class MonoSingletongeneric<T> : MonoBehaviour where T : MonoSingletongeneric<T>
+namespace GameplayMechanicsUMFOSS.Core
 {
-    private static T instance;
-    public static T Instance { get { return instance; } }
-    protected virtual void Awake()
+    /// <summary>
+    /// Generic singleton base class for MonoBehaviour.
+    /// Inherit from this to make any manager a persistent, globally accessible singleton.
+    /// Persists across scene loads via DontDestroyOnLoad.
+    /// </summary>
+    public class MonoSingletongeneric<T> : MonoBehaviour where T : MonoSingletongeneric<T>
     {
-        if (instance == null)
+        private static T instance;
+
+        /// <summary>
+        /// The singleton instance. Returns null if no instance exists yet.
+        /// </summary>
+        public static T Instance { get { return instance; } }
+
+        protected virtual void Awake()
         {
-            instance = (T)this;
-        }
-        else
-        {
-            Destroy(this);
+            if (instance == null)
+            {
+                instance = (T)this;
+                DontDestroyOnLoad(gameObject);
+            }
+            else
+            {
+                Destroy(gameObject);
+            }
         }
     }
 }

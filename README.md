@@ -185,6 +185,7 @@ EventBus.Subscribe<PlayerJumpedEvent>(e => audioManager.PlayJumpSound());
 |---|---|---|---|---|
 | 1 | [MonoSingleton Generic](#1-monosingleton-generic) | Shubham B | Core | — |
 | 2 | [Generic & Scalable Dialogue System](#2-generic--scalable-dialogue-system) | Mayur | Dialogue | [▶ Watch](https://github.com/vijit101/UnityMechanicsFramework/tree/main/RuntimeMechanics/Dailogue/2.%20GenericAndScalableDialogueSystem/Assets/Video%20tutorial) |
+| 3 | [Save & Load System](#3-save--load-system) | [Jash Savaliya](https://github.com/Jash2606) | Systems | [▶ Watch](https://drive.google.com/drive/folders/1d3vY3Rbn1R7yiDcg34YOhl4gvYksV0Lm?usp=sharing) |
 
 *More mechanics are added with every merged PR. [Contribute yours →](#9-how-to-contribute)*
 
@@ -274,6 +275,63 @@ dialogueSystem.StartDialogue(npcDatabase, onComplete: () =>
 
 ---
 
+### 3. Save & Load System
+
+| | |
+|---|---|
+| **Author** | [Jash Savaliya](https://github.com/Jash2606) |
+| **Namespace** | `GameplayMechanicsUMFOSS.Systems` |
+| **Location** | `Runtime/Systems/SaveSystem/SaveSystem_UMFOSS.cs` |
+| **Category** | Systems / Persistence |
+| **Demo Scene** | `Samples~/SaveSystem/Assets/Scenes/DemoScene.unity` |
+| **Video** | [▶ Watch Walkthrough](https://drive.google.com/drive/folders/1d3vY3Rbn1R7yiDcg34YOhl4gvYksV0Lm?usp=sharing) |
+
+**What it does**
+
+A generic, extensible save and load system that any mechanic can plug into without modifying the core. Scripts implement `ISaveable_UMFOSS` (three methods), register themselves, and their state is automatically saved to structured JSON files. Supports multiple save slots, version migration for surviving game updates, optional XOR encryption, and auto-save.
+
+**How to use it**
+
+```csharp
+using GameplayMechanicsUMFOSS.Systems;
+
+// Step 1: Implement ISaveable_UMFOSS on your script
+public class MyMechanic : MonoBehaviour, ISaveable_UMFOSS
+{
+    [SerializeField] private string uniqueID = "MyMechanic_Player";
+    private int score;
+
+    [System.Serializable]
+    private struct MySaveData { public int score; }
+
+    public string GetSaveID() => uniqueID;
+    public object CaptureState() => new MySaveData { score = this.score };
+    public void RestoreState(object state)
+    {
+        var data = JsonUtility.FromJson<MySaveData>(state as string);
+        this.score = data.score;
+    }
+
+    void OnEnable() => SaveSystem_UMFOSS.Instance?.Register(this);
+    void OnDisable() => SaveSystem_UMFOSS.Instance?.Deregister(this);
+}
+
+// Step 2: Save and load from anywhere
+SaveSystem_UMFOSS.Instance.Save("Slot1");
+SaveSystem_UMFOSS.Instance.Load("Slot1");
+```
+
+**Highlights**
+
+- Generic — any script implements three interface methods and is automatically saved
+- Version migration — old save files survive game updates without data loss
+- Multiple save slots with independent files (Slot1, Slot2, AutoSave)
+- Optional XOR encryption for anti-tamper
+- Zero external dependencies — uses Unity's JsonUtility with a custom SerializableDictionary
+- Full ScriptExplainer with line-by-line code explanation and Integration Guide
+
+---
+
 <!--
 ================================================================
 CONTRIBUTOR ENTRY TEMPLATE
@@ -335,7 +393,7 @@ All scripts use `GameplayMechanicsUMFOSS` as the base namespace, extended by fea
 | `GameplayMechanicsUMFOSS.Combat` | Hitboxes, damage, status effects | 🔓 Open for contribution |
 | `GameplayMechanicsUMFOSS.UI` | HUD, menus, tooltips | 🔓 Open for contribution |
 | `GameplayMechanicsUMFOSS.AI` | Patrol, pathfinding, decisions | 🔓 Open for contribution |
-| `GameplayMechanicsUMFOSS.Systems` | Save/load, audio, scene management | 🔓 Open for contribution |
+| `GameplayMechanicsUMFOSS.Systems` | Save/load, audio, scene management | ✅ Active |
 
 ---
 

@@ -654,12 +654,12 @@ Below the Quick Navigation table, add your mechanic's full entry. This is the on
 
 | | |
 |---|---|
-| **Author** | [Your Name](https://github.com/your-handle) |
+| **Author** | [Jash Savaliya](https://github.com/Jash2606) |
 | **Namespace** | `GameplayMechanicsUMFOSS.YourFeatureGroup` |
 | **Location** | `Runtime/YourFeatureGroup/YourMechanicScript.cs` |
 | **Category** | Movement / Combat / UI / Core / etc. |
 | **Demo Scene** | `Samples~/YourMechanicName/Assets/Scenes/DemoScene.unity` |
-| **Video** | [▶ Watch Walkthrough](YOUR_VIDEO_LINK) |
+| **Video** | [▶ Watch Walkthrough](https://drive.google.com/drive/folders/1d3vY3Rbn1R7yiDcg34YOhl4gvYksV0Lm?usp=sharing) |
 
 **What it does**
 

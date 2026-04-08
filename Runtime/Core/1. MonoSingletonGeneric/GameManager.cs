@@ -1,14 +1,17 @@
-using NUnit.Framework.Constraints;
 using UnityEngine;
 
-public class GameManager : MonoSingletongeneric<GameManager>
+namespace GameplayMechanicsUMFOSS.Core
 {
-    // with this the Game Manager becomes a singleton and any other scripts will have 
-    // Access to the Gamemanager.Instance as Isntance is static 
-    // As Game manager is inheriting the monosingletongeneric so it becomes hence any script inheriting monosingleton generic will becoem a singleton 
-
-     protected override void Awake()
+    /// <summary>
+    /// Example GameManager singleton.
+    /// Inherits MonoSingletongeneric so it persists across scenes
+    /// and is accessible globally via GameManager.Instance.
+    /// </summary>
+    public class GameManager : MonoSingletongeneric<GameManager>
+    {
+        protected override void Awake()
         {
             base.Awake();
         }
+    }
 }

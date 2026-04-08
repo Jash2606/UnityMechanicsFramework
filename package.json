@@ -9,5 +9,12 @@
   },
   "dependencies": {
     "com.unity.textmeshpro": "3.0.6"
-  }
+  },
+  "samples": [
+    {
+      "displayName": "Save System Demo",
+      "description": "Complete save and load system demo with health and inventory saveables.",
+      "path": "Samples~/SaveSystem"
+    }
+  ]
 }
