@@ -72,4 +72,5 @@ crashlytics-build.properties
 /[Aa]ssets/[Ss]treamingAssets/aa/*
 
 # Additional junk files
-*.ini.DS_Store
+.DS_Store
+*.ini

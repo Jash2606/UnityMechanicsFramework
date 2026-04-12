@@ -185,6 +185,7 @@ EventBus.Subscribe<PlayerJumpedEvent>(e => audioManager.PlayJumpSound());
 |---|---|---|---|---|
 | 1 | [MonoSingleton Generic](#1-monosingleton-generic) | Shubham B | Core | — |
 | 2 | [Generic & Scalable Dialogue System](#2-generic--scalable-dialogue-system) | Mayur | Dialogue | [▶ Watch]
+| 3 | [Modular Jump System](#3-modular-jump-system) | [Ankur Kalita](https://github.com/ankur-kalita) | Movement | [▶ Watch](https://drive.google.com/file/d/1OD1NjW9OB8GgTeyrgvqVtJW8c4KZakMs/view?usp=sharing) |
 | 64 | [Utils](#64-Utils) | [Shubham ](https://github.com/vijit101) | Core | [▶ Watch]() |
 (https://github.com/vijit101/UnityMechanicsFramework/tree/main/RuntimeMechanics/Dailogue/2.%20GenericAndScalableDialogueSystem/Assets/Video%20tutorial) |
 
@@ -328,7 +329,7 @@ dialogueSystem.StartDialogue(npcDatabase, onComplete: () =>
 | **Namespace** | `GameplayMechanicsUMFOSS.Movement` / `GameplayMechanicsUMFOSS.Physics` |
 | **Location** | `Runtime/Movement/ModularJumpSystem_UMFOSS.cs`, `Runtime/Physics/` |
 | **Category** | Movement |
-| **Demo Scene** | `Samples~/JumpSystemSample/` |
+| **Demo Scene** | `Samples~/JumpSystemSample/Assets/Scenes/DemoScene.unity` |
 | **Video** | [▶ Watch Walkthrough](https://drive.google.com/file/d/1OD1NjW9OB8GgTeyrgvqVtJW8c4KZakMs/view?usp=sharing) |
 
 **What it does**
@@ -361,11 +362,9 @@ jumpSystem.OnJumpEnd += () => Debug.Log("Landed!");
 
 **Highlights**
 
-- **Adapter pattern** — `IPhysicsAdapter` with `Physics2DAdapter` and `Physics3DAdapter`. Zero duplicated logic between modes.
-- **Platformer-ready** — coyote time, jump buffering, variable jump height, N-jumps, gravity multipliers, terminal velocity
-- **Plug-and-play** — auto-adds the correct physics adapter based on dimension mode selection
-- **Decoupled input** — works with Unity Input System via `InputActionReference`, or call `OnJumpPressed()`/`OnJumpReleased()` from any input code
-- **Extensible** — exposes `OnJumpStart`/`OnJumpEnd` events and `ForceJump()` API for bounce pads, launch mechanics, etc.
+- **Adapter pattern** — `IPhysicsAdapter` with `Physics2DAdapter` and `Physics3DAdapter`. Zero duplicated logic between 2D and 3D modes.
+- **Platformer-ready** — coyote time, jump buffering, variable jump height, N-jumps, gravity multipliers, and terminal velocity — all configurable from the Inspector
+- **Demonstrates the Strategy pattern** — swappable physics backends via interface abstraction, teaching clean dependency inversion in Unity
 
 ---
 
