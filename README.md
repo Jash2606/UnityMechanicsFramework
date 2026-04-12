@@ -35,7 +35,7 @@ This repository centralizes production-ready, reusable mechanics — built by th
     - [Quick Navigation](#quick-navigation)
     - [1. MonoSingleton Generic](#1-monosingleton-generic)
     - [2. Generic \& Scalable Dialogue System](#2-generic--scalable-dialogue-system)
-    - [3. Save \& Load System](#3-save--load-system)
+    - [3. Save & Load System](#3-save--load-system)
   - [7. Namespace Reference](#7-namespace-reference)
   - [8. Unity Version \& Compatibility](#8-unity-version--compatibility)
   - [9. How to Contribute](#9-how-to-contribute)
@@ -310,22 +310,22 @@ using GameplayMechanicsUMFOSS.Systems;
 // Step 1: Implement ISaveable_UMFOSS on your script
 public class MyMechanic : MonoBehaviour, ISaveable_UMFOSS
 {
-    [SerializeField] private string uniqueID = "MyMechanic_Player";
-    private int score;
+  [SerializeField] private string uniqueID = "MyMechanic_Player";
+  private int score;
 
-    [System.Serializable]
-    private struct MySaveData { public int score; }
+  [System.Serializable]
+  private struct MySaveData { public int score; }
 
-    public string GetSaveID() => uniqueID;
-    public object CaptureState() => new MySaveData { score = this.score };
-    public void RestoreState(object state)
-    {
-        var data = JsonUtility.FromJson<MySaveData>(state as string);
-        this.score = data.score;
-    }
+  public string GetSaveID() => uniqueID;
+  public object CaptureState() => new MySaveData { score = this.score };
+  public void RestoreState(object state)
+  {
+    var data = JsonUtility.FromJson<MySaveData>(state as string);
+    this.score = data.score;
+  }
 
-    void OnEnable() => SaveSystem_UMFOSS.Instance?.Register(this);
-    void OnDisable() => SaveSystem_UMFOSS.Instance?.Deregister(this);
+  void OnEnable() => SaveSystem_UMFOSS.Instance?.Register(this);
+  void OnDisable() => SaveSystem_UMFOSS.Instance?.Deregister(this);
 }
 
 // Step 2: Save and load from anywhere
