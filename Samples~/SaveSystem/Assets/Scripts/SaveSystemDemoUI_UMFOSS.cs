@@ -49,6 +49,10 @@ namespace GameplayMechanicsUMFOSS.Samples.SaveSystem
             if (swordItem == null) swordItem = Resources.Load<ItemData_UMFOSS>("Items/Sword");
             if (shieldItem == null) shieldItem = Resources.Load<ItemData_UMFOSS>("Items/Shield");
 
+            // Keep demo playable even if sample item assets are missing.
+            if (swordItem == null) swordItem = CreateRuntimeItem("Sword", "Fallback demo sword item.");
+            if (shieldItem == null) shieldItem = CreateRuntimeItem("Shield", "Fallback demo shield item.");
+
             // Build the UI
             CreateUI();
 
@@ -63,7 +67,13 @@ namespace GameplayMechanicsUMFOSS.Samples.SaveSystem
                 var meta = SaveSystem_UMFOSS.Instance.GetSaveMetadata("Slot1");
                 if (meta != null)
                 {
-                    timestampText.text = $"Last Saved: {System.DateTime.Parse(meta.lastSavedTimestamp).ToString("g")}";
+                    System.DateTime parsedTimestamp;
+                    if (System.DateTime.TryParse(meta.lastSavedTimestamp, out parsedTimestamp))
+                    {
+                        timestampText.text = $"Last Saved: {parsedTimestamp:g}";
+                    }
+
+                    savePathText.text = $"Save Path: {SaveSystem_UMFOSS.Instance.GetSaveFilePath("Slot1")}";
                 }
             }
 
@@ -255,46 +265,31 @@ namespace GameplayMechanicsUMFOSS.Samples.SaveSystem
 
         private void OnTakeDamage()
         {
-            foreach (var hs in FindObjectsOfType<HealthSystem_UMFOSS>())
-            {
-                hs.TakeDamage(20f);
-            }
+            if (healthSystem != null) healthSystem.TakeDamage(20f);
             UpdateDisplay();
         }
 
         private void OnHeal()
         {
-            foreach (var hs in FindObjectsOfType<HealthSystem_UMFOSS>())
-            {
-                hs.Heal(15f);
-            }
+            if (healthSystem != null) healthSystem.Heal(15f);
             UpdateDisplay();
         }
 
         private void OnAddSword()
         {
-            foreach (var inv in FindObjectsOfType<InventorySystem_UMFOSS>())
-            {
-                if (swordItem != null) inv.AddItem(swordItem, 1);
-            }
+            if (inventorySystem != null && swordItem != null) inventorySystem.AddItem(swordItem, 1);
             UpdateDisplay();
         }
 
         private void OnAddShield()
         {
-            foreach (var inv in FindObjectsOfType<InventorySystem_UMFOSS>())
-            {
-                if (shieldItem != null) inv.AddItem(shieldItem, 1);
-            }
+            if (inventorySystem != null && shieldItem != null) inventorySystem.AddItem(shieldItem, 1);
             UpdateDisplay();
         }
 
         private void OnClearInventory()
         {
-            foreach (var inv in FindObjectsOfType<InventorySystem_UMFOSS>())
-            {
-                inv.ClearInventory();
-            }
+            if (inventorySystem != null) inventorySystem.ClearInventory();
             UpdateDisplay();
         }
 
@@ -332,8 +327,8 @@ namespace GameplayMechanicsUMFOSS.Samples.SaveSystem
                 SaveSystem_UMFOSS.Instance.NewGame("Slot1");
 
                 // Reset game state
-                foreach (var hs in FindObjectsOfType<HealthSystem_UMFOSS>()) hs.ResetHealth();
-                foreach (var inv in FindObjectsOfType<InventorySystem_UMFOSS>()) inv.ClearInventory();
+                if (healthSystem != null) healthSystem.ResetHealth();
+                if (inventorySystem != null) inventorySystem.ClearInventory();
 
                 UpdateDisplay();
             }
@@ -371,6 +366,15 @@ namespace GameplayMechanicsUMFOSS.Samples.SaveSystem
         private void OnLoadFailed(string slot, string error)
         {
             if (statusText != null) statusText.text = $"Status: <color=red>Load Failed ({error})</color>";
+        }
+
+        private ItemData_UMFOSS CreateRuntimeItem(string itemName, string description)
+        {
+            ItemData_UMFOSS item = ScriptableObject.CreateInstance<ItemData_UMFOSS>();
+            item.name = itemName;
+            item.itemName = itemName;
+            item.description = description;
+            return item;
         }
 
         // ─────────────────────────────────────────────

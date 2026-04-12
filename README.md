@@ -18,16 +18,28 @@ This repository centralizes production-ready, reusable mechanics — built by th
 
 ## Table of Contents
 
-1. [What Is This?](#1-what-is-this)
-2. [Who Is This For?](#2-who-is-this-for)
-3. [Getting Started](#3-getting-started)
-4. [Folder Structure](#4-folder-structure)
-5. [Core Architecture](#5-core-architecture)
-6. [Mechanics Library](#6-mechanics-library) ← **Start here to find a mechanic**
-7. [Namespace Reference](#7-namespace-reference)
-8. [Unity Version & Compatibility](#8-unity-version--compatibility)
-9. [How to Contribute](#9-how-to-contribute)
-10. [License](#10-license)
+- [UnityMechanicsFramework](#unitymechanicsframework)
+  - [Table of Contents](#table-of-contents)
+  - [1. What Is This?](#1-what-is-this)
+  - [2. Who Is This For?](#2-who-is-this-for)
+  - [3. Getting Started](#3-getting-started)
+    - [Option A — Clone the full repository](#option-a--clone-the-full-repository)
+    - [Option B — Grab a single mechanic](#option-b--grab-a-single-mechanic)
+    - [Running a demo](#running-a-demo)
+  - [4. Folder Structure](#4-folder-structure)
+  - [5. Core Architecture](#5-core-architecture)
+    - [MonoSingleton — Generic Singleton Base](#monosingleton--generic-singleton-base)
+    - [IPhysicsAdapter — Physics-Agnostic Mechanics](#iphysicsadapter--physics-agnostic-mechanics)
+    - [EventBus — Decoupled Communication](#eventbus--decoupled-communication)
+  - [6. Mechanics Library](#6-mechanics-library)
+    - [Quick Navigation](#quick-navigation)
+    - [1. MonoSingleton Generic](#1-monosingleton-generic)
+    - [2. Generic \& Scalable Dialogue System](#2-generic--scalable-dialogue-system)
+    - [3. Save \& Load System](#3-save--load-system)
+  - [7. Namespace Reference](#7-namespace-reference)
+  - [8. Unity Version \& Compatibility](#8-unity-version--compatibility)
+  - [9. How to Contribute](#9-how-to-contribute)
+  - [10. License](#10-license)
 
 ---
 
@@ -185,7 +197,7 @@ EventBus.Subscribe<PlayerJumpedEvent>(e => audioManager.PlayJumpSound());
 |---|---|---|---|---|
 | 1 | [MonoSingleton Generic](#1-monosingleton-generic) | Shubham B | Core | — |
 | 2 | [Generic & Scalable Dialogue System](#2-generic--scalable-dialogue-system) | Mayur | Dialogue | [▶ Watch](https://github.com/vijit101/UnityMechanicsFramework/tree/main/RuntimeMechanics/Dailogue/2.%20GenericAndScalableDialogueSystem/Assets/Video%20tutorial) |
-| 3 | [Save & Load System](#3-save--load-system) | [Jash Savaliya](https://github.com/Jash2606) | Systems | [▶ Watch](https://drive.google.com/drive/folders/1d3vY3Rbn1R7yiDcg34YOhl4gvYksV0Lm?usp=sharing) |
+| 3 | [Save & Load System](#3-save--load-system) | [Jash Savaliya](https://github.com/Jash2606), [Rushabh Mistry](https://github.com/Rushhaabhhh), [Sarthak Pandey](https://github.com/SarthakPaandey) | Systems | [▶ Watch](https://drive.google.com/drive/folders/1d3vY3Rbn1R7yiDcg34YOhl4gvYksV0Lm?usp=sharing) |
 
 *More mechanics are added with every merged PR. [Contribute yours →](#9-how-to-contribute)*
 
@@ -279,7 +291,7 @@ dialogueSystem.StartDialogue(npcDatabase, onComplete: () =>
 
 | | |
 |---|---|
-| **Author** | [Jash Savaliya](https://github.com/Jash2606) |
+| **Author** | [Jash Savaliya](https://github.com/Jash2606), [Rushabh Mistry](https://github.com/Rushhaabhhh), [Sarthak Pandey](https://github.com/SarthakPaandey) |
 | **Namespace** | `GameplayMechanicsUMFOSS.Systems` |
 | **Location** | `Runtime/Systems/SaveSystem/SaveSystem_UMFOSS.cs` |
 | **Category** | Systems / Persistence |

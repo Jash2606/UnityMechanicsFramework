@@ -42,6 +42,19 @@ namespace GameplayMechanicsUMFOSS.Systems
     }
 
     /// <summary>
+    /// Lightweight metadata-only view of a save file.
+    /// Used by SaveFileHandler.LoadMetadata to avoid deserializing gameplay payload.
+    /// </summary>
+    [System.Serializable]
+    public class SaveMetadata_UMFOSS
+    {
+        public int saveVersion;
+        public string saveSlotName;
+        public string lastSavedTimestamp;
+        public string sceneNameOnSave;
+    }
+
+    /// <summary>
     /// A Dictionary(string, string) wrapper that works with Unity's JsonUtility.
     /// JsonUtility cannot serialize Dictionary natively, so we use
     /// ISerializationCallbackReceiver to convert to/from parallel lists.

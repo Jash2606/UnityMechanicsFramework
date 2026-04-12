@@ -137,19 +137,11 @@ namespace GameplayMechanicsUMFOSS.Samples.SaveSystem
 
             Debug.Log($"[HealthSystem] Attempting to restore from JSON: {json}");
 
-            HealthSaveData data = new HealthSaveData();
             try
             {
-                JsonUtility.FromJsonOverwrite(json, data);
-                
-                // Since the user accidentally duplicated the component in the scene,
-                // we apply the loaded save to ALL copies so the UI never desyncs.
-                foreach (var duplicate in FindObjectsOfType<HealthSystem_UMFOSS>())
-                {
-                    duplicate.currentHealth = data.currentHealth;
-                    duplicate.maxHealth = data.maxHealth;
-                }
-                
+                HealthSaveData data = JsonUtility.FromJson<HealthSaveData>(json);
+                currentHealth = data.currentHealth;
+                maxHealth = data.maxHealth;
                 Debug.Log($"[HealthSystem] State restored SUCCESSFULLY. New Health: {currentHealth}/{maxHealth}");
             }
             catch (System.Exception e)

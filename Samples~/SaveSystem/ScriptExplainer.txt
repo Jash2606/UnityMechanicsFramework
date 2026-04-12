@@ -132,11 +132,18 @@ public static class SaveFileHandler_UMFOSS
     // 4. Deserialize with JsonUtility.FromJson<SaveData_UMFOSS>
     // 5. Return null on any failure — NEVER throw. Caller handles null gracefully.
 
-    XOREncryptDecrypt():
-    // Simple symmetric XOR cipher.
+    XOREncrypt() / XORDecrypt():
+    // Byte-level XOR cipher with Base64 encoding.
     // NOT cryptographically strong. This is anti-tamper for casual games.
     // Keeps honest players honest without adding complexity.
-    // The same function encrypts and decrypts (XOR is its own inverse).
+    //
+    // HOW IT WORKS:
+    //   Encrypt: UTF-8 bytes → XOR with key bytes → Base64 string (safe for file I/O)
+    //   Decrypt: Base64 string → XOR with key bytes → UTF-8 string
+    // 
+    // Previous versions used char-level XOR which produced invalid UTF-8
+    // (null bytes, control characters) that corrupted save files. The byte-level
+    // approach with Base64 wrapping ensures the output is always valid text.
 
 ================================================================================
   FILE 4: SaveSystem_UMFOSS.cs — The Coordinator

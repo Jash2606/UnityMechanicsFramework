@@ -18,6 +18,12 @@ namespace GameplayMechanicsUMFOSS.Systems
         private const string SAVE_EXTENSION = ".sav";
 
         /// <summary>
+        /// Last file operation error message. Empty when the last operation succeeded.
+        /// SaveSystem uses this for user-facing failure events.
+        /// </summary>
+        public static string LastErrorMessage { get; private set; } = string.Empty;
+
+        /// <summary>
         /// The directory where all save files are stored.
         /// </summary>
         public static string SaveDirectory
@@ -46,15 +52,26 @@ namespace GameplayMechanicsUMFOSS.Systems
         /// <returns>True if save succeeded, false otherwise.</returns>
         public static bool Save(SaveData_UMFOSS data, string slotName, bool encrypt = false, string encryptionKey = "")
         {
+            LastErrorMessage = string.Empty;
+
             if (data == null)
             {
-                Debug.LogError("[SaveFileHandler] Cannot save null data.");
+                LastErrorMessage = "Cannot save null data.";
+                Debug.LogError($"[SaveFileHandler] {LastErrorMessage}");
                 return false;
             }
 
             if (string.IsNullOrEmpty(slotName))
             {
-                Debug.LogError("[SaveFileHandler] Slot name cannot be null or empty.");
+                LastErrorMessage = "Slot name cannot be null or empty.";
+                Debug.LogError($"[SaveFileHandler] {LastErrorMessage}");
+                return false;
+            }
+
+            if (encrypt && string.IsNullOrEmpty(encryptionKey))
+            {
+                LastErrorMessage = "Encryption is enabled but encryptionKey is empty.";
+                Debug.LogError($"[SaveFileHandler] {LastErrorMessage}");
                 return false;
             }
 
@@ -79,7 +96,7 @@ namespace GameplayMechanicsUMFOSS.Systems
                 // Optional encryption
                 if (encrypt && !string.IsNullOrEmpty(encryptionKey))
                 {
-                    json = XOREncryptDecrypt(json, encryptionKey);
+                    json = XOREncrypt(json, encryptionKey);
                 }
 
                 // Write to disk
@@ -91,17 +108,20 @@ namespace GameplayMechanicsUMFOSS.Systems
             }
             catch (IOException ex)
             {
-                Debug.LogError($"[SaveFileHandler] IO error while saving to slot '{slotName}': {ex.Message}");
+                LastErrorMessage = $"IO error while saving: {ex.Message}";
+                Debug.LogError($"[SaveFileHandler] {LastErrorMessage}");
                 return false;
             }
             catch (UnauthorizedAccessException ex)
             {
-                Debug.LogError($"[SaveFileHandler] Permission denied while saving to slot '{slotName}': {ex.Message}");
+                LastErrorMessage = $"Permission denied while saving: {ex.Message}";
+                Debug.LogError($"[SaveFileHandler] {LastErrorMessage}");
                 return false;
             }
             catch (Exception ex)
             {
-                Debug.LogError($"[SaveFileHandler] Unexpected error while saving to slot '{slotName}': {ex.Message}");
+                LastErrorMessage = $"Unexpected save error: {ex.Message}";
+                Debug.LogError($"[SaveFileHandler] {LastErrorMessage}");
                 return false;
             }
         }
@@ -116,9 +136,19 @@ namespace GameplayMechanicsUMFOSS.Systems
         /// <returns>The deserialized SaveData, or null on failure.</returns>
         public static SaveData_UMFOSS Load(string slotName, bool encrypt = false, string encryptionKey = "")
         {
+            LastErrorMessage = string.Empty;
+
             if (string.IsNullOrEmpty(slotName))
             {
-                Debug.LogError("[SaveFileHandler] Slot name cannot be null or empty.");
+                LastErrorMessage = "Slot name cannot be null or empty.";
+                Debug.LogError($"[SaveFileHandler] {LastErrorMessage}");
+                return null;
+            }
+
+            if (encrypt && string.IsNullOrEmpty(encryptionKey))
+            {
+                LastErrorMessage = "Encryption is enabled but encryptionKey is empty.";
+                Debug.LogError($"[SaveFileHandler] {LastErrorMessage}");
                 return null;
             }
 
@@ -126,7 +156,8 @@ namespace GameplayMechanicsUMFOSS.Systems
 
             if (!File.Exists(filePath))
             {
-                Debug.LogWarning($"[SaveFileHandler] Save file not found: {filePath}");
+                LastErrorMessage = $"Save file not found: {filePath}";
+                Debug.LogWarning($"[SaveFileHandler] {LastErrorMessage}");
                 return null;
             }
 
@@ -137,14 +168,15 @@ namespace GameplayMechanicsUMFOSS.Systems
 
                 if (string.IsNullOrEmpty(json))
                 {
-                    Debug.LogError($"[SaveFileHandler] Save file is empty: {filePath}");
+                    LastErrorMessage = $"Save file is empty: {filePath}";
+                    Debug.LogError($"[SaveFileHandler] {LastErrorMessage}");
                     return null;
                 }
 
                 // Optional decryption
                 if (encrypt && !string.IsNullOrEmpty(encryptionKey))
                 {
-                    json = XOREncryptDecrypt(json, encryptionKey);
+                    json = XORDecrypt(json, encryptionKey);
                 }
 
                 // Deserialize
@@ -152,7 +184,8 @@ namespace GameplayMechanicsUMFOSS.Systems
 
                 if (data == null)
                 {
-                    Debug.LogError($"[SaveFileHandler] Failed to deserialize save file: {filePath}");
+                    LastErrorMessage = $"Failed to deserialize save file: {filePath}";
+                    Debug.LogError($"[SaveFileHandler] {LastErrorMessage}");
                     return null;
                 }
 
@@ -167,12 +200,14 @@ namespace GameplayMechanicsUMFOSS.Systems
             }
             catch (IOException ex)
             {
-                Debug.LogError($"[SaveFileHandler] IO error while loading slot '{slotName}': {ex.Message}");
+                LastErrorMessage = $"IO error while loading: {ex.Message}";
+                Debug.LogError($"[SaveFileHandler] {LastErrorMessage}");
                 return null;
             }
             catch (Exception ex)
             {
-                Debug.LogError($"[SaveFileHandler] Failed to parse save file '{slotName}': {ex.Message}");
+                LastErrorMessage = $"Failed to parse save file '{slotName}': {ex.Message}";
+                Debug.LogError($"[SaveFileHandler] {LastErrorMessage}");
                 return null;
             }
         }
@@ -187,10 +222,68 @@ namespace GameplayMechanicsUMFOSS.Systems
         /// <returns>A SaveData with metadata populated but savedObjects may be empty, or null on failure.</returns>
         public static SaveData_UMFOSS LoadMetadata(string slotName, bool encrypt = false, string encryptionKey = "")
         {
-            // For simplicity and safety, we load the full file but the caller
-            // should only access the metadata fields. The savedObjects dictionary
-            // is populated but not processed — this is still fast for UI display.
-            return Load(slotName, encrypt, encryptionKey);
+            LastErrorMessage = string.Empty;
+
+            if (string.IsNullOrEmpty(slotName))
+            {
+                LastErrorMessage = "Slot name cannot be null or empty.";
+                Debug.LogError($"[SaveFileHandler] {LastErrorMessage}");
+                return null;
+            }
+
+            if (encrypt && string.IsNullOrEmpty(encryptionKey))
+            {
+                LastErrorMessage = "Encryption is enabled but encryptionKey is empty.";
+                Debug.LogError($"[SaveFileHandler] {LastErrorMessage}");
+                return null;
+            }
+
+            string filePath = GetFilePath(slotName);
+            if (!File.Exists(filePath))
+            {
+                LastErrorMessage = $"Save file not found: {filePath}";
+                Debug.LogWarning($"[SaveFileHandler] {LastErrorMessage}");
+                return null;
+            }
+
+            try
+            {
+                string json = File.ReadAllText(filePath, Encoding.UTF8);
+                if (string.IsNullOrEmpty(json))
+                {
+                    LastErrorMessage = $"Save file is empty: {filePath}";
+                    Debug.LogError($"[SaveFileHandler] {LastErrorMessage}");
+                    return null;
+                }
+
+                if (encrypt)
+                {
+                    json = XORDecrypt(json, encryptionKey);
+                }
+
+                SaveMetadata_UMFOSS metadata = JsonUtility.FromJson<SaveMetadata_UMFOSS>(json);
+                if (metadata == null)
+                {
+                    LastErrorMessage = $"Failed to read save metadata: {filePath}";
+                    Debug.LogError($"[SaveFileHandler] {LastErrorMessage}");
+                    return null;
+                }
+
+                return new SaveData_UMFOSS
+                {
+                    saveVersion = metadata.saveVersion,
+                    saveSlotName = metadata.saveSlotName,
+                    lastSavedTimestamp = metadata.lastSavedTimestamp,
+                    sceneNameOnSave = metadata.sceneNameOnSave,
+                    savedObjects = new SerializableDictionary()
+                };
+            }
+            catch (Exception ex)
+            {
+                LastErrorMessage = $"Failed to read metadata for slot '{slotName}': {ex.Message}";
+                Debug.LogError($"[SaveFileHandler] {LastErrorMessage}");
+                return null;
+            }
         }
 
         /// <summary>
@@ -267,14 +360,14 @@ namespace GameplayMechanicsUMFOSS.Systems
         }
 
         /// <summary>
-        /// Simple XOR encryption/decryption.
+        /// XOR encrypts a string and returns a Base64-encoded result.
         /// Not cryptographically strong — intended as anti-tamper for casual games.
-        /// The same method is used for both encryption and decryption (XOR is symmetric).
+        /// Uses byte-level XOR to avoid invalid UTF-8, then Base64 for safe file I/O.
         /// </summary>
-        /// <param name="input">The string to encrypt or decrypt.</param>
+        /// <param name="input">The plaintext string to encrypt.</param>
         /// <param name="key">The encryption key.</param>
-        /// <returns>The XOR-processed string.</returns>
-        private static string XOREncryptDecrypt(string input, string key)
+        /// <returns>Base64-encoded encrypted string.</returns>
+        private static string XOREncrypt(string input, string key)
         {
             if (string.IsNullOrEmpty(key))
             {
@@ -282,13 +375,48 @@ namespace GameplayMechanicsUMFOSS.Systems
                 return input;
             }
 
-            StringBuilder sb = new StringBuilder(input.Length);
-            for (int i = 0; i < input.Length; i++)
+            byte[] data = Encoding.UTF8.GetBytes(input);
+            byte[] keyBytes = Encoding.UTF8.GetBytes(key);
+
+            for (int i = 0; i < data.Length; i++)
             {
-                char c = (char)(input[i] ^ key[i % key.Length]);
-                sb.Append(c);
+                data[i] = (byte)(data[i] ^ keyBytes[i % keyBytes.Length]);
             }
-            return sb.ToString();
+
+            // Base64 ensures the output is always valid text for File.WriteAllText
+            return Convert.ToBase64String(data);
+        }
+
+        /// <summary>
+        /// Decrypts a Base64-encoded, XOR-encrypted string back to plaintext.
+        /// </summary>
+        private static string XORDecrypt(string input, string key)
+        {
+            if (string.IsNullOrEmpty(key))
+            {
+                Debug.LogWarning("[SaveFileHandler] Encryption key is empty. Returning input unchanged.");
+                return input;
+            }
+
+            byte[] data;
+            try
+            {
+                data = Convert.FromBase64String(input);
+            }
+            catch (FormatException)
+            {
+                Debug.LogError("[SaveFileHandler] Failed to decode Base64. File may be corrupt or not encrypted.");
+                return input;
+            }
+
+            byte[] keyBytes = Encoding.UTF8.GetBytes(key);
+
+            for (int i = 0; i < data.Length; i++)
+            {
+                data[i] = (byte)(data[i] ^ keyBytes[i % keyBytes.Length]);
+            }
+
+            return Encoding.UTF8.GetString(data);
         }
     }
 }

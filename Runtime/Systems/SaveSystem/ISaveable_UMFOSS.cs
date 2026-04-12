@@ -21,15 +21,17 @@ namespace GameplayMechanicsUMFOSS.Systems
         /// representing this script's current state.
         /// Can be a [System.Serializable] struct/class, a primitive, or any
         /// type that JsonUtility can serialize.
+        /// The returned object will be serialized to a JSON string by SaveSystem.
         /// </summary>
         object CaptureState();
 
         /// <summary>
-        /// Called by SaveSystem when loading. Receives the object previously
-        /// returned by CaptureState (deserialized from JSON).
-        /// Cast it back to the expected type and apply the state.
+        /// Called by SaveSystem when loading. Receives the JSON string
+        /// that was produced by serializing the object from CaptureState.
+        /// Cast state to string, then use JsonUtility.FromJson&lt;T&gt;()
+        /// to deserialize back to your data type and apply the values.
         /// </summary>
-        /// <param name="state">The deserialized state object.</param>
+        /// <param name="state">A JSON string representing the saved state. Cast to string before deserializing.</param>
         void RestoreState(object state);
     }
 }

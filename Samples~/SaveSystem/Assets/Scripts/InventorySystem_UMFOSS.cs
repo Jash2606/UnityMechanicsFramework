@@ -227,21 +227,28 @@ namespace GameplayMechanicsUMFOSS.Samples.SaveSystem
             foreach (var slotData in data.slots)
             {
                 ItemData_UMFOSS itemData = Resources.Load<ItemData_UMFOSS>("Items/" + slotData.itemDataName);
-                if (itemData != null)
+                if (itemData == null)
                 {
-                    // Apply to ALL duplicated inventory systems in the scene to cure inspector desyncs
-                    foreach (var duplicate in FindObjectsOfType<InventorySystem_UMFOSS>())
-                    {
-                        duplicate.AddItem(itemData, slotData.quantity);
-                    }
+                    itemData = CreateFallbackItem(slotData.itemDataName);
+                    Debug.LogWarning($"[InventorySystem] Could not load item '{slotData.itemDataName}' from Resources/Items/. Using runtime fallback item.");
                 }
-                else
-                {
-                    Debug.LogWarning($"[InventorySystem] Could not load item '{slotData.itemDataName}' from Resources/Items/. Item skipped.");
-                }
+
+                AddItem(itemData, slotData.quantity);
             }
 
             Debug.Log($"[InventorySystem] State restored: {slots.Count} item types loaded.");
+        }
+
+        /// <summary>
+        /// Creates a runtime item definition so demo restore still works when sample assets are missing.
+        /// </summary>
+        private ItemData_UMFOSS CreateFallbackItem(string itemName)
+        {
+            ItemData_UMFOSS fallback = ScriptableObject.CreateInstance<ItemData_UMFOSS>();
+            fallback.name = itemName;
+            fallback.itemName = itemName;
+            fallback.description = "Runtime fallback item generated during restore.";
+            return fallback;
         }
     }
 

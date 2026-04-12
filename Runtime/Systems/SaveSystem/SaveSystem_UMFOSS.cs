@@ -234,7 +234,9 @@ namespace GameplayMechanicsUMFOSS.Systems
             }
             else
             {
-                string reason = "Failed to write save file to disk.";
+                string reason = string.IsNullOrEmpty(SaveFileHandler_UMFOSS.LastErrorMessage)
+                    ? "Failed to write save file to disk."
+                    : SaveFileHandler_UMFOSS.LastErrorMessage;
                 Debug.LogError($"[SaveSystem] === SAVE FAILED === Slot: '{slotName}', Reason: {reason}");
                 OnSaveFailed?.Invoke(slotName, reason);
             }
@@ -256,7 +258,9 @@ namespace GameplayMechanicsUMFOSS.Systems
 
             if (saveData == null)
             {
-                string reason = "Save file not found, empty, or corrupt.";
+                string reason = string.IsNullOrEmpty(SaveFileHandler_UMFOSS.LastErrorMessage)
+                    ? "Save file not found, empty, or corrupt."
+                    : SaveFileHandler_UMFOSS.LastErrorMessage;
                 Debug.LogError($"[SaveSystem] === LOAD FAILED === Slot: '{slotName}', Reason: {reason}");
                 OnLoadFailed?.Invoke(slotName, reason);
                 return;
@@ -294,6 +298,8 @@ namespace GameplayMechanicsUMFOSS.Systems
             {
                 // Same scene — restore immediately
                 RestoreAllSaveables(saveData);
+                pendingLoadData = null;
+                pendingLoadSlot = string.Empty;
                 Debug.Log($"[SaveSystem] === LOAD COMPLETE === Slot: '{slotName}'");
                 OnGameLoaded?.Invoke(slotName);
             }
@@ -392,18 +398,34 @@ namespace GameplayMechanicsUMFOSS.Systems
         {
             int fromVersion = saveData.saveVersion;
 
+            if (saveData.savedObjects == null)
+            {
+                saveData.savedObjects = new SerializableDictionary();
+            }
+
             switch (fromVersion)
             {
                 case 0:
-                    // Migration from version 0 to 1:
-                    // Example: Add default values for fields that didn't exist in v0
+                    // Migration v0 -> v1
+                    // Populate new metadata fields and map known legacy IDs.
+                    if (string.IsNullOrEmpty(saveData.saveSlotName)) saveData.saveSlotName = defaultSlotName;
+                    if (string.IsNullOrEmpty(saveData.lastSavedTimestamp)) saveData.lastSavedTimestamp = System.DateTime.Now.ToString("o");
+                    if (string.IsNullOrEmpty(saveData.sceneNameOnSave)) saveData.sceneNameOnSave = SceneManager.GetActiveScene().name;
+
+                    const string legacyHealthID = "HealthSystem";
+                    const string currentHealthID = "HealthSystem_Player";
+                    string legacyHealthJson;
+                    if (saveData.savedObjects.TryGetValue(legacyHealthID, out legacyHealthJson) && !saveData.savedObjects.ContainsKey(currentHealthID))
+                    {
+                        saveData.savedObjects.Add(currentHealthID, legacyHealthJson);
+                        saveData.savedObjects.Remove(legacyHealthID);
+                    }
+
                     Debug.Log("[SaveSystem] Migrated save from v0 → v1");
-                    goto case 1;
+                    break;
 
                 case 1:
-                    // Migration from version 1 to 2:
-                    // Add future migration steps here
-                    // Debug.Log("[SaveSystem] Migrated save from v1 → v2");
+                    // Current version. Keep for future migrations.
                     break;
 
                 default:
@@ -517,9 +539,8 @@ namespace GameplayMechanicsUMFOSS.Systems
                 RestoreAllSaveables(pendingLoadData);
                 Debug.Log($"[SaveSystem] === LOAD COMPLETE (after scene load) === Slot: '{slotName}'");
                 OnGameLoaded?.Invoke(slotName);
-
-                // Keep pendingLoadData so late-registering saveables can still be restored
-                // It will be cleared on the next Save, NewGame, or explicit clear
+                pendingLoadData = null;
+                pendingLoadSlot = string.Empty;
             }
         }
 
