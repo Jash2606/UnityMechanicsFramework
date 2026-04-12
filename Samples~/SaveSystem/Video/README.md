@@ -9,7 +9,7 @@
 | Namespace | GameplayMechanicsUMFOSS.Systems |
 | Runtime Entry | Runtime/Systems/SaveSystem/SaveSystem_UMFOSS.cs |
 | Demo Scene | Samples~/SaveSystem/Assets/Scenes/DemoScene.unity |
-| Video | https://drive.google.com/drive/folders/1d3vY3Rbn1R7yiDcg34YOhl4gvYksV0Lm?usp=sharing |
+| Video | [video_Save_Sytem.zip](video_Save_Sytem.zip) |
 
 ## What This Mechanic Does
 
@@ -133,6 +133,6 @@ This guide and demo are intended to validate:
 
 ## Video Link
 
-Watch the full walkthrough here:
+Watch the full walkthrough from the repository ZIP:
 
-https://drive.google.com/drive/folders/1d3vY3Rbn1R7yiDcg34YOhl4gvYksV0Lm?usp=sharing
+[video_Save_Sytem.zip](video_Save_Sytem.zip)

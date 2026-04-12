@@ -197,7 +197,7 @@ EventBus.Subscribe<PlayerJumpedEvent>(e => audioManager.PlayJumpSound());
 |---|---|---|---|---|
 | 1 | [MonoSingleton Generic](#1-monosingleton-generic) | Shubham B | Core | — |
 | 2 | [Generic & Scalable Dialogue System](#2-generic--scalable-dialogue-system) | Mayur | Dialogue | [▶ Watch](https://github.com/vijit101/UnityMechanicsFramework/tree/main/RuntimeMechanics/Dailogue/2.%20GenericAndScalableDialogueSystem/Assets/Video%20tutorial) |
-| 3 | [Save & Load System](#3-save--load-system) | [Jash Savaliya](https://github.com/Jash2606), [Rushabh Mistry](https://github.com/Rushhaabhhh), [Sarthak Pandey](https://github.com/SarthakPaandey) | Systems | [▶ Watch](https://drive.google.com/drive/folders/1d3vY3Rbn1R7yiDcg34YOhl4gvYksV0Lm?usp=sharing) |
+| 3 | [Save & Load System](#3-save--load-system) | [Jash Savaliya](https://github.com/Jash2606), [Rushabh Mistry](https://github.com/Rushhaabhhh), [Sarthak Pandey](https://github.com/SarthakPaandey) | Systems | [▶ Watch ZIP](Samples~/SaveSystem/Video/video_Save_Sytem.zip) |
 
 *More mechanics are added with every merged PR. [Contribute yours →](#9-how-to-contribute)*
 
@@ -296,7 +296,7 @@ dialogueSystem.StartDialogue(npcDatabase, onComplete: () =>
 | **Location** | `Runtime/Systems/SaveSystem/SaveSystem_UMFOSS.cs` |
 | **Category** | Systems / Persistence |
 | **Demo Scene** | `Samples~/SaveSystem/Assets/Scenes/DemoScene.unity` |
-| **Video** | [▶ Watch Walkthrough](https://drive.google.com/drive/folders/1d3vY3Rbn1R7yiDcg34YOhl4gvYksV0Lm?usp=sharing) |
+| **Video** | [▶ Watch ZIP](Samples~/SaveSystem/Video/video_Save_Sytem.zip) |
 
 **What it does**
 
