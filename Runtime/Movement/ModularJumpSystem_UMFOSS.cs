@@ -42,7 +42,7 @@ namespace GameplayMechanicsUMFOSS.Movement
     ///
     /// Setup:
     /// 1. Attach this component to your player GameObject
-    /// 2. Select DimensionMode (2D or 3D) — adapter is auto-added if missing
+    /// 2. Select DimensionMode (2D or 3D) - adapter is auto-added if missing
     /// 3. Assign a Jump InputActionReference, or call OnJumpPressed/OnJumpReleased from your own input code
     /// 4. Configure ground detection layer and settings
     /// </summary>
@@ -338,7 +338,7 @@ namespace GameplayMechanicsUMFOSS.Movement
             {
                 coyoteTimeCounter -= Time.deltaTime;
 
-                // Coyote time expired without jumping — consume the ground jump
+                // Coyote time expired without jumping - consume the ground jump
                 if (coyoteTimeCounter <= 0f && jumpsRemaining == maxJumps)
                 {
                     jumpsRemaining--;
