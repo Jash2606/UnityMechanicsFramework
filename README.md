@@ -185,7 +185,7 @@ EventBus.Subscribe<PlayerJumpedEvent>(e => audioManager.PlayJumpSound());
 |---|---|---|---|---|
 | 1 | [MonoSingleton Generic](#1-monosingleton-generic) | Shubham B | Core | — |
 | 2 | [Generic & Scalable Dialogue System](#2-generic--scalable-dialogue-system) | Mayur | Dialogue | [▶ Watch]
-| 3 | [Modular Jump System](#3-modular-jump-system) | [Ankur Kalita](https://github.com/ankur-kalita) | Movement | [▶ Watch](https://drive.google.com/file/d/1hUqZCzNM5HEmRkwO54R7d9gj6ZHiFQQI/view?usp=sharing) |
+| 3 | [Modular Jump System](#3-modular-jump-system) | [Ankur Kalita](https://github.com/ankur-kalita) | Movement | [▶ Watch](./Samples~/JumpSystemSample/Video/ModularJumpImpl.mp4.zip) |
 | 64 | [Utils](#64-Utils) | [Shubham ](https://github.com/vijit101) | Core | [▶ Watch]() |
 (https://github.com/vijit101/UnityMechanicsFramework/tree/main/RuntimeMechanics/Dailogue/2.%20GenericAndScalableDialogueSystem/Assets/Video%20tutorial) |
 
@@ -327,10 +327,11 @@ dialogueSystem.StartDialogue(npcDatabase, onComplete: () =>
 |---|---|
 | **Author** | [Ankur Kalita](https://github.com/ankur-kalita) |
 | **Namespace** | `GameplayMechanicsUMFOSS.Movement` / `GameplayMechanicsUMFOSS.Physics` |
-| **Location** | `Runtime/Movement/ModularJumpSystem_UMFOSS.cs`, `Runtime/Physics/` |
+| **Location** | `Runtime/Mechanic/ModularJumpSystem/Scripts/` |
+| **Script Explainers** | `Runtime/Mechanic/ModularJumpSystem/Script_Explainers/` |
 | **Category** | Movement |
-| **Demo Scene** | `Samples~/JumpSystemSample/Assets/Scenes/DemoScene.unity` |
-| **Video** | [▶ Watch Walkthrough](https://drive.google.com/file/d/1hUqZCzNM5HEmRkwO54R7d9gj6ZHiFQQI/view?usp=sharing) |
+| **Demo Scene** | Included in `Samples~/JumpSystemSample/JumpSystemProjectZip.zip` |
+| **Video** | [▶ Watch Walkthrough](./Samples~/JumpSystemSample/Video/ModularJumpImpl.mp4.zip) |
 
 **What it does**
 

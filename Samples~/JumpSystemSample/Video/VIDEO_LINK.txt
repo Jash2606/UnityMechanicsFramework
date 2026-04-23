@@ -1,6 +1,0 @@
-Video Demo: Modular Jump System (2D/3D)
-Author: Ankur Kalita
-
-The video file is over 100MB and is hosted externally per Contributing.md Section 11.3.
-
-Watch here: https://drive.google.com/file/d/1hUqZCzNM5HEmRkwO54R7d9gj6ZHiFQQI/view?usp=sharing
