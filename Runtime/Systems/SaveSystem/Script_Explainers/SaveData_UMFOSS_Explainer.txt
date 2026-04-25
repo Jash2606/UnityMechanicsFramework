@@ -1,0 +1,80 @@
+================================================================================
+  SCRIPT: SaveData_UMFOSS.cs
+  AUTHOR: Jash Savaliya, Rushabh Mistry, Sarthak Pandey
+  NAMESPACE: GameplayMechanicsUMFOSS.Systems
+================================================================================
+
+PURPOSE:
+Defines the complete save file structure as it exists in memory. A single
+instance of SaveData_UMFOSS = one save file on disk. Also contains the
+SerializableDictionary class that works around Unity's JsonUtility limitation
+of not supporting Dictionary<TKey, TValue>.
+
+----------------------------------------------------
+
+Code    : public class SaveData_UMFOSS
+Explain : This is the root data container for a save file. Every field in this
+          class becomes a top-level property in the JSON save file.
+
+Code    : public int saveVersion;
+Explain : The version of the save format when this file was created.
+          WHY VERSION:
+            Games change after release. New fields are added, mechanics renamed.
+            Without versioning, old save files become invalid after an update.
+            With versioning, the system detects outdated saves and migrates them
+            using the MigrateSave() switch-case pattern.
+
+Code    : public string saveSlotName;
+Explain : Which slot this save belongs to (e.g., "Slot1", "Slot2", "AutoSave").
+          Each slot maps to a separate .sav file on disk.
+
+Code    : public string lastSavedTimestamp;
+Explain : ISO 8601 timestamp (e.g., "2024-01-15T14:30:00.000+05:30").
+          Used by the save slot UI to show when each slot was last saved.
+          Generated using System.DateTime.Now.ToString("o") for full precision.
+
+Code    : public string sceneNameOnSave;
+Explain : The active scene when the save was made.
+          WHY STORE THE SCENE:
+            Load must know which scene to load BEFORE calling RestoreState.
+            The saveables don't exist until their scene is loaded.
+            Without this, loading always starts from the same scene regardless
+            of where the player saved.
+
+Code    : public SerializableDictionary savedObjects;
+Explain : Key = SaveID (from GetSaveID()), Value = JSON string.
+          Each saveable's state is independently serialized to its own JSON string.
+          This means saveables are completely independent — they can be added,
+          removed, or modified without affecting each other.
+
+----------------------------------------------------
+
+Code    : public class SerializableDictionary : ISerializationCallbackReceiver
+Explain : WHY THIS EXISTS:
+            Unity's JsonUtility cannot serialize Dictionary<TKey, TValue> natively.
+            It throws a silent error and produces empty JSON.
+
+            ISerializationCallbackReceiver solves this:
+              - OnBeforeSerialize: converts Dictionary → two parallel Lists
+                (keys[] and values[])
+              - OnAfterDeserialize: converts two Lists → Dictionary
+
+            This avoids adding Newtonsoft.Json as a package dependency, keeping
+            the framework zero-dependency.
+
+Code    : [SerializeField] private List<string> keys = new List<string>();
+          [SerializeField] private List<string> values = new List<string>();
+Explain : These parallel lists are what JsonUtility actually serializes.
+          keys[0] maps to values[0], keys[1] maps to values[1], etc.
+          The dictionary field is the runtime-convenient accessor;
+          the lists are the serialization-friendly storage.
+
+Code    : public void OnBeforeSerialize()
+Explain : Called by Unity just before JsonUtility.ToJson().
+          Clears both lists, then iterates the dictionary and populates them.
+          This ensures the lists always reflect the current dictionary state.
+
+Code    : public void OnAfterDeserialize()
+Explain : Called by Unity just after JsonUtility.FromJson().
+          Clears the dictionary, then rebuilds it from the parallel lists.
+          Handles edge cases: mismatched list lengths, duplicate keys.

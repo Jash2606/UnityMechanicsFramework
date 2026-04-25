@@ -1,0 +1,116 @@
+================================================================================
+  SCRIPT: SaveSystem_UMFOSS.cs
+  AUTHOR: Jash Savaliya, Rushabh Mistry, Sarthak Pandey
+  NAMESPACE: GameplayMechanicsUMFOSS.Systems
+================================================================================
+
+PURPOSE:
+The central coordinator of the Save & Load System. It manages the lifecycle of
+all saveable objects, orchestrates save/load operations, handles version migration,
+and provides auto-save functionality. Inherits from MonoSingletongeneric<T>
+for global access and persistence across scenes.
+
+----------------------------------------------------
+
+Code    : public class SaveSystem_UMFOSS : MonoSingletongeneric<SaveSystem_UMFOSS>
+Explain : Inherits from the singleton base so it:
+            - Persists across scene loads (DontDestroyOnLoad)
+            - Is globally accessible via SaveSystem_UMFOSS.Instance
+            - Automatically destroys duplicate instances
+          Any script can call SaveSystem_UMFOSS.Instance.Save("Slot1") from anywhere.
+
+Code    : [SerializeField] private int currentSaveVersion = 1;
+Explain : The current version of the save format. Increment this in the Inspector
+          whenever you change the structure of save data (add fields, rename them).
+          On load, if the file version < currentSaveVersion, MigrateSave() runs.
+
+Code    : [SerializeField] private bool autoSaveOnSceneUnload;
+Explain : When enabled, automatically triggers a save to the "AutoSave" slot
+          when the current scene is about to unload. Uses SceneManager events.
+
+Code    : [SerializeField] private float autoSaveInterval;
+Explain : If > 0, starts a coroutine that saves every N seconds to "AutoSave".
+          Set to 0 to disable interval-based auto-saving.
+
+Code    : [SerializeField] private string defaultSlotName = "Slot1";
+Explain : The default save slot name used when no slot is specified.
+
+Code    : [SerializeField] private bool encryptSaveFile;
+          [SerializeField] private string encryptionKey;
+Explain : Toggle and key for XOR encryption. Set in Inspector.
+          The key should be a non-empty string. XOR is anti-tamper, not security.
+
+----------------------------------------------------
+
+Code    : private Dictionary<string, ISaveable_UMFOSS> registeredSaveables;
+Explain : Runtime registry of all active saveables. Key = SaveID, Value = ISaveable.
+          Populated by Register(), depopulated by Deregister().
+
+Code    : public void Register(ISaveable_UMFOSS saveable)
+Explain : ISaveable scripts call this in OnEnable.
+          Validates: null check, empty ID check, duplicate ID warning.
+          If a pending load exists (cross-scene load), immediately restores state.
+
+          WHY OnEnable/OnDisable (not Start/OnDestroy):
+            OnEnable/OnDisable fire when an object is activated/deactivated,
+            including during scene load and unload. Start and OnDestroy do NOT
+            fire reliably during scene transitions. Using the correct lifecycle
+            methods means saveables are always correctly registered.
+
+Code    : public void Deregister(ISaveable_UMFOSS saveable)
+Explain : Called in OnDisable. Removes the saveable from the registry.
+          After deregistration, the saveable's state won't be included in saves.
+
+Code    : public void Save(string slotName)
+Explain : The save pipeline:
+            1. Create a new SaveData_UMFOSS
+            2. For each registered ISaveable:
+               a. Call CaptureState() — get the state object
+               b. Serialize it to JSON with JsonUtility.ToJson()
+               c. Store in savedObjects under GetSaveID() key
+            3. Set metadata (timestamp, scene, version)
+            4. Pass to SaveFileHandler.Save()
+            5. Fire OnGameSaved event on success / OnSaveFailed on failure
+
+Code    : public void Load(string slotName)
+Explain : The load pipeline:
+            1. Call SaveFileHandler.Load() — get SaveData
+            2. Check saveVersion:
+               - If newer than current → BLOCK. Log error + OnLoadFailed.
+                 (Player running older build with a save from newer build.)
+               - If older → call MigrateSave() to upgrade
+            3. Check scene: if different from current, load scene async first
+            4. For each registered ISaveable:
+               a. Look up GetSaveID() in savedObjects
+               b. If found: pass JSON string to RestoreState()
+               c. If not found: skip gracefully (new mechanic added after save)
+            5. Fire OnGameLoaded event
+
+Code    : private void MigrateSave(SaveData_UMFOSS saveData)
+Explain : Switch on the old version, apply cumulative upgrades.
+          Each case falls through to the next using goto.
+          This is the standard version migration pattern used in production games.
+          Future game updates add new cases here — old saves always get upgraded.
+
+Code    : private SaveData_UMFOSS pendingLoadData;
+Explain : When loading across scenes, the save data is cached here.
+          As new saveables register via OnEnable after the scene loads,
+          they check for pending data and restore immediately.
+          This solves the timing problem: saveables don't exist until
+          their scene is loaded, but they need data from the save file.
+
+Code    : public void Delete(string slotName)
+Explain : Deletes the save file from disk via SaveFileHandler.Delete().
+          Fires OnSaveDeleted event on success.
+
+Code    : public void NewGame(string slotName)
+Explain : Deletes the save file and fires OnNewGameStarted.
+          Game logic should reset state in response to this event.
+
+Code    : public List<string> GetAllSaveSlots()
+Explain : Returns all slot names that have save files on disk.
+          Useful for building a save slot selection UI.
+
+Code    : public SaveData_UMFOSS GetSaveMetadata(string slotName)
+Explain : Loads metadata (timestamp, scene, version) for UI display.
+          The caller should only access metadata fields, not savedObjects.

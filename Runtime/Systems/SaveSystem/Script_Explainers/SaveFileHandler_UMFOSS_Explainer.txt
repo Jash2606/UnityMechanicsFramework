@@ -1,0 +1,71 @@
+================================================================================
+  SCRIPT: SaveFileHandler_UMFOSS.cs
+  AUTHOR: Jash Savaliya, Rushabh Mistry, Sarthak Pandey
+  NAMESPACE: GameplayMechanicsUMFOSS.Systems
+================================================================================
+
+PURPOSE:
+A static utility class responsible for all file I/O operations — reading and
+writing save files to disk. It knows NOTHING about game mechanics. It only
+knows how to serialize SaveData to JSON, write it to a file, read it back,
+and optionally encrypt/decrypt the content.
+
+----------------------------------------------------
+
+Code    : public static class SaveFileHandler_UMFOSS
+Explain : Static class — no MonoBehaviour, no scene dependency, no instance needed.
+          The SaveSystem calls it. Nothing else should call it directly.
+          This separation means file I/O logic is testable in isolation.
+
+Code    : private static string SaveDirectory => Application.persistentDataPath + "/Saves/"
+Explain : WHY persistentDataPath AND NOT dataPath:
+            - dataPath is the project's Assets folder — READONLY on builds
+            - persistentDataPath is the OS-designated save location:
+                Windows: C:/Users/<user>/AppData/LocalLow/<company>/<game>/
+                macOS:   ~/Library/Application Support/<company>/<game>/
+                Linux:   ~/.config/unity3d/<company>/<game>/
+                Android: /data/data/<package>/files/
+                iOS:     /var/mobile/Containers/Data/Application/<guid>/Documents/
+            - It persists across app updates
+            - It's the correct cross-platform save location
+
+Code    : public static bool Save(SaveData_UMFOSS data, string slotName, ...)
+Explain : The save pipeline:
+            1. Ensure directory exists (Directory.CreateDirectory is idempotent)
+            2. Serialize SaveData to JSON with JsonUtility.ToJson(data, true)
+               (true = pretty-print for debugging; can be false in release)
+            3. Optionally XOR-encrypt the JSON string
+            4. Write to disk with File.WriteAllText (UTF-8 encoding)
+          All wrapped in try-catch for IO errors, permission issues, disk full.
+          Returns true on success, false on failure — never throws.
+
+Code    : public static SaveData_UMFOSS Load(string slotName, ...)
+Explain : The load pipeline:
+            1. Check file exists — return null if not (no exception)
+            2. Read entire file contents with File.ReadAllText
+            3. Optionally XOR-decrypt
+            4. Deserialize with JsonUtility.FromJson<SaveData_UMFOSS>
+            5. Return null on any failure — NEVER throw
+          The caller (SaveSystem) handles null gracefully.
+
+Code    : public static SaveData_UMFOSS LoadMetadata(string slotName, ...)
+Explain : Loads save metadata for UI display (timestamp, scene, version).
+          Currently loads the full file — acceptable for v1.
+          TODO: For production with large saves, implement partial JSON parsing
+          that reads only metadata fields without deserializing savedObjects.
+
+Code    : private static string XOREncrypt(string input, string key)
+Explain : Byte-level XOR cipher with Base64 encoding.
+          Pipeline: UTF-8 bytes → XOR each byte with key bytes → Base64 string
+          Base64 ensures the output is always valid text for File.WriteAllText.
+          NOT cryptographically strong — intended as anti-tamper for casual games.
+
+Code    : private static string XORDecrypt(string input, string key)
+Explain : Reverse of XOREncrypt:
+          Pipeline: Base64 string → decode to bytes → XOR with key → UTF-8 string
+          Includes try-catch for FormatException if Base64 is corrupted.
+
+          WHY SEPARATE ENCRYPT AND DECRYPT:
+            Previous versions used a single symmetric function operating on chars.
+            This produced null bytes and invalid UTF-8 that corrupted save files.
+            The byte-level approach with Base64 wrapping is safe for all inputs.

@@ -1,0 +1,57 @@
+================================================================================
+  SCRIPT: ISaveable_UMFOSS.cs
+  AUTHOR: Jash Savaliya, Rushabh Mistry, Sarthak Pandey
+  NAMESPACE: GameplayMechanicsUMFOSS.Systems
+================================================================================
+
+PURPOSE:
+Defines the contract that ANY MonoBehaviour must implement to participate in
+the Save & Load System. This is the foundation of the entire architecture:
+the SaveSystem never needs to know what HealthSystem or InventorySystem are.
+It only knows ISaveable_UMFOSS.
+
+----------------------------------------------------
+
+Code    : public interface ISaveable_UMFOSS
+Explain : Defines a C# interface — a contract that forces implementing classes
+          to provide specific methods. By programming to this interface, the
+          SaveSystem is completely decoupled from any specific mechanic.
+
+Code    : string GetSaveID();
+Explain : Returns a unique string identifier for this saveable instance.
+          This ID is the key used to store and retrieve the state in the save file.
+
+          WHY A SERIALIZED FIELD (uniqueID) INSTEAD OF gameObject.name:
+            - gameObject.name can change at runtime (e.g., "Player(Clone)")
+            - Multiple instances might share the same gameObject.name
+            - Dynamically spawned objects have unpredictable names
+            - A serialized uniqueID field is stable, inspector-editable, and predictable
+
+          RULE: Two saveables with the same ID = last one overwrites the other.
+                Always ensure IDs are unique across all saveables in the scene.
+
+Code    : object CaptureState();
+Explain : Called by SaveSystem when saving. The implementing script packs its
+          current state into a serializable object (typically a [System.Serializable]
+          struct or class) and returns it.
+          
+          The returned object will be serialized to a JSON string by SaveSystem.
+
+          WHY EACH MECHANIC OWNS ITS OWN DATA FORMAT:
+            A monolithic SaveManager that knows about HealthSystem, InventorySystem,
+            and WeaponSystem is coupled to all three. Add a new mechanic — modify
+            SaveManager. Rename a field — modify SaveManager.
+            The ISaveable pattern inverts this. Each mechanic knows everything about
+            its own data. SaveSystem knows nothing about any mechanic.
+            This is the Open/Closed Principle in practice.
+
+Code    : void RestoreState(object state);
+Explain : Called by SaveSystem when loading. Receives the JSON string that was
+          produced by serializing the object from CaptureState.
+          Cast state to string, then use JsonUtility.FromJson<T>() to deserialize
+          back to your data type and apply the values.
+
+          Example:
+            string json = state as string;
+            MyData data = JsonUtility.FromJson<MyData>(json);
+            this.health = data.health;

@@ -1,0 +1,53 @@
+================================================================================
+  SCRIPT: SaveSystemEvents_UMFOSS.cs
+  AUTHOR: Jash Savaliya, Rushabh Mistry, Sarthak Pandey
+  NAMESPACE: GameplayMechanicsUMFOSS.Systems
+================================================================================
+
+PURPOSE:
+Defines the delegate types used for all save system events. Kept in a separate
+file for clean organization. The actual event fields are declared on
+SaveSystem_UMFOSS — this file only defines the delegate signatures.
+
+This follows the Observer pattern: any system (UI, analytics, audio) can react
+to save/load operations without the SaveSystem needing to know they exist.
+
+----------------------------------------------------
+
+Code    : namespace GameplayMechanicsUMFOSS.Systems
+Explain : Same namespace as the rest of the Save System. All delegates are
+          accessible to any script that imports this namespace.
+
+Code    : public delegate void OnSaveAction(string slotName);
+Explain : Delegate signature for successful save events.
+          Receives the slot name so listeners know which slot was saved.
+          Used by: OnGameSaved event on SaveSystem_UMFOSS.
+
+Code    : public delegate void OnLoadAction(string slotName);
+Explain : Delegate signature for successful load events.
+          Receives the slot name so listeners know which slot was loaded.
+          Used by: OnGameLoaded event.
+
+Code    : public delegate void OnDeleteAction(string slotName);
+Explain : Fired when a save file is deleted.
+          Used by: OnSaveDeleted event.
+
+Code    : public delegate void OnFailAction(string slotName, string reason);
+Explain : Delegate for failed operations. Includes a reason string for debugging.
+          Used by: OnSaveFailed, OnLoadFailed events.
+          WHY INCLUDE REASON:
+            The reason string helps with debugging without requiring the subscriber
+            to dig through console logs. It can be displayed in UI or sent to
+            analytics.
+
+Code    : public delegate void OnNewGameAction(string slotName);
+Explain : Fired when NewGame() is called — save file deleted and state reset.
+          Used by: OnNewGameStarted event.
+
+          WHY EVENTS OVER DIRECT REFERENCES:
+            Without events, SaveSystem would need to know about every UI element,
+            every analytics tracker, every audio cue that plays on save.
+            With events, SaveSystem fires the event and walks away. Any system
+            that cares subscribes. Systems that don't care don't even know
+            the events exist. This is the Observer pattern — fundamental to
+            decoupled architecture in Unity.
