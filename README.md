@@ -5,7 +5,7 @@
 **A modular, open-source collection of plug-and-play gameplay mechanics built for Unity.**
 
 Stop rewriting the same systems across every project.  
-This repository centralizes production-ready, reusable mechanics â€” built by the community, documented for everyone.
+This repository centralizes production-ready, reusable mechanics — built by the community, documented for everyone.
 
 [![PRs Welcome](https://img.shields.io/badge/PRs-welcome-brightgreen.svg)](https://github.com/vijit101/UnityMechanicsFramework/pulls)
 [![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg)](./LICENSE)
@@ -23,14 +23,14 @@ This repository centralizes production-ready, reusable mechanics â€” built 
   - [1. What Is This?](#1-what-is-this)
   - [2. Who Is This For?](#2-who-is-this-for)
   - [3. Getting Started](#3-getting-started)
-    - [Option A â€” Clone the full repository](#option-a--clone-the-full-repository)
-    - [Option B â€” Grab a single mechanic](#option-b--grab-a-single-mechanic)
+    - [Option A — Clone the full repository](#option-a--clone-the-full-repository)
+    - [Option B — Grab a single mechanic](#option-b--grab-a-single-mechanic)
     - [Running a demo](#running-a-demo)
   - [4. Folder Structure](#4-folder-structure)
   - [5. Core Architecture](#5-core-architecture)
-    - [MonoSingleton â€” Generic Singleton Base](#monosingleton--generic-singleton-base)
-    - [IPhysicsAdapter â€” Physics-Agnostic Mechanics](#iphysicsadapter--physics-agnostic-mechanics)
-    - [EventBus â€” Decoupled Communication](#eventbus--decoupled-communication)
+    - [MonoSingleton — Generic Singleton Base](#monosingleton--generic-singleton-base)
+    - [IPhysicsAdapter — Physics-Agnostic Mechanics](#iphysicsadapter--physics-agnostic-mechanics)
+    - [EventBus — Decoupled Communication](#eventbus--decoupled-communication)
   - [6. Mechanics Library](#6-mechanics-library)
     - [Quick Navigation](#quick-navigation)
     - [1. MonoSingleton Generic](#1-monosingleton-generic)
@@ -45,7 +45,7 @@ This repository centralizes production-ready, reusable mechanics â€” built 
 
 ## 1. What Is This?
 
-Every Unity developer has rewritten the same 10 mechanics dozens of times â€” a singleton manager, a jump controller, a dialogue system, a drag-and-drop handler. Each time from scratch. Each time slightly differently.
+Every Unity developer has rewritten the same 10 mechanics dozens of times — a singleton manager, a jump controller, a dialogue system, a drag-and-drop handler. Each time from scratch. Each time slightly differently.
 
 **UnityMechanicsFramework** puts an end to that.
 
@@ -68,14 +68,14 @@ The goal is simple: build the mechanic once, document it properly, and let every
 | **Learner / Student** | Study real Unity patterns with video walkthroughs and line-by-line code explanations. Raise and contribute issues |
 | **Indie Developer** | Grab production-ready mechanics and integrate them in minutes, not hours |
 | **Game Jam Participant** | Ship faster by pulling from a library of ready-to-use, pre-tested systems |
-| **Educator / Mentor** | Point students at specific mechanics â€” every one has a video on how to use it , and a full code explainer  |
+| **Educator / Mentor** | Point students at specific mechanics — every one has a video on how to use it , and a full code explainer  |
 | **Open Source Contributor** | Add your mechanic, get it reviewed, and leave a permanent credited entry in this library |
 
 ---
 
 ## 3. Getting Started
 
-### Option A â€” Clone the full repository
+### Option A — Clone the full repository
 
 ```bash
 git clone https://github.com/vijit101/UnityMechanicsFramework.git
@@ -83,7 +83,7 @@ git clone https://github.com/vijit101/UnityMechanicsFramework.git
 
 Import this Unity as a github pacakge using Unity Package manager . All packages import automatically via `package.json`.
 
-### Option B â€” Grab a single mechanic
+### Option B — Grab a single mechanic
 
 Each mechanic lives in its own self-contained folder under `Samples~/`. Copy any mechanic folder directly into your existing project without pulling in the entire repository.
 
@@ -106,7 +106,7 @@ There are only scripts that you would need to load up as a package and follow th
 UnityMechanicsFramework/
 |
 +-- package.json                    # UPM Manifest
-+-- README.md                       # You are here â€” the mechanics index
++-- README.md                       # You are here — the mechanics index
 +-- CONTRIBUTING.md                 # Read this before contributing
 +-- CHANGELOG.md
 +-- LICENSE
@@ -121,7 +121,7 @@ UnityMechanicsFramework/
 |
 +-- Editor/                         # Editor-only tools, inspectors, property drawers
 |
-+-- Samples~/                       # One folder per mechanic â€” runnable demos
++-- Samples~/                       # One folder per mechanic — runnable demos
 |   +-- JumpExample/
 |   +-- DialogueExample/
 |   +-- [YourMechanicName]/         # Added by contributors
@@ -137,7 +137,7 @@ UnityMechanicsFramework/
 
 Three foundational patterns run across the entire framework. Understanding them takes 5 minutes and will make every mechanic immediately readable.
 
-### MonoSingleton â€” Generic Singleton Base
+### MonoSingleton — Generic Singleton Base
 
 Convert any `MonoBehaviour` into a persistent singleton by inheriting `MonoSingletonGeneric<T>`. No boilerplate. No repeated code.
 
@@ -153,19 +153,19 @@ public class AudioManager : MonoSingletonGeneric<AudioManager>
 AudioManager.Instance.PlaySFX(jumpClip);
 ```
 
-### IPhysicsAdapter â€” Physics-Agnostic Mechanics
+### IPhysicsAdapter — Physics-Agnostic Mechanics
 
 All physics-dependent mechanics reference `IPhysicsAdapter` instead of `Rigidbody2D` directly. Swap `Physics2DAdapter` for `Physics3DAdapter` on your GameObject and the mechanic works in both dimensions without any code changes.
 
 ```csharp
 [SerializeField] private IPhysicsAdapter physics;
 
-// Works with both 2D and 3D â€” no changes needed
+// Works with both 2D and 3D — no changes needed
 physics.AddForce(Vector2.up * jumpForce);
 physics.SetVelocity(Vector2.zero);
 ```
 
-### EventBus â€” Decoupled Communication
+### EventBus — Decoupled Communication
 
 Mechanics never hold direct references to each other. They communicate via events. A jump system never needs to know a sound manager exists. Not all mechanics migght follow this depending on the issues raised .
 
@@ -173,7 +173,7 @@ Mechanics never hold direct references to each other. They communicate via event
 // Any mechanic can publish:
 EventBus.Publish(new PlayerJumpedEvent { height = 12f });
 
-// Any other system can react â€” from anywhere:
+// Any other system can react — from anywhere:
 EventBus.Subscribe<PlayerJumpedEvent>(e => audioManager.PlayJumpSound());
 ```
 
@@ -187,7 +187,7 @@ EventBus.Subscribe<PlayerJumpedEvent>(e => audioManager.PlayJumpSound());
 > the author's name and profile, a video walkthrough, a link to the mechanic, usage instructions, and highlights.
 >
 > **Contributors:** when your PR is merged, add your entry here following the format below.  
-> See [CONTRIBUTING.md â†’ Section 14](./CONTRIBUTING.md#14-updating-the-mechanics-library-in-readme) for the exact format required.
+> See [CONTRIBUTING.md → Section 14](./CONTRIBUTING.md#14-updating-the-mechanics-library-in-readme) for the exact format required.
 
 ---
 
@@ -195,11 +195,11 @@ EventBus.Subscribe<PlayerJumpedEvent>(e => audioManager.PlayJumpSound());
 
 | # | Mechanic | Author | Category | Video |
 |---|---|---|---|---|
-| 1 | [MonoSingleton Generic](#1-monosingleton-generic) | Shubham B | Core | â€” |
-| 2 | [Generic & Scalable Dialogue System](#2-generic--scalable-dialogue-system) | Mayur | Dialogue | [â–¶ Watch](https://github.com/vijit101/UnityMechanicsFramework/tree/main/RuntimeMechanics/Dailogue/2.%20GenericAndScalableDialogueSystem/Assets/Video%20tutorial) |
-| 3 | [Save & Load System](#3-save--load-system) | [Jash Savaliya](https://github.com/Jash2606), [Rushabh Mistry](https://github.com/Rushhaabhhh), [Sarthak Pandey](https://github.com/SarthakPaandey) | Systems | [â–¶ Watch](Samples~/SaveSystem/SaveSystem_Video.zip) |
+| 1 | [MonoSingleton Generic](#1-monosingleton-generic) | Shubham B | Core | — |
+| 2 | [Generic & Scalable Dialogue System](#2-generic--scalable-dialogue-system) | Mayur | Dialogue | [▶ Watch](https://github.com/vijit101/UnityMechanicsFramework/tree/main/RuntimeMechanics/Dailogue/2.%20GenericAndScalableDialogueSystem/Assets/Video%20tutorial) |
+| 3 | [Save & Load System](#3-save--load-system) | [Jash Savaliya](https://github.com/Jash2606), [Rushabh Mistry](https://github.com/Rushhaabhhh), [Sarthak Pandey](https://github.com/SarthakPaandey) | Systems | [▶ Watch](Samples~/SaveSystem/SaveSystem_Video.zip) |
 
-*More mechanics are added with every merged PR. [Contribute yours â†’](#9-how-to-contribute)*
+*More mechanics are added with every merged PR. [Contribute yours →](#9-how-to-contribute)*
 
 ---
 
@@ -212,7 +212,7 @@ EventBus.Subscribe<PlayerJumpedEvent>(e => audioManager.PlayJumpSound());
 | **Location** | `Runtime/Core/MonoSingleton.cs` |
 | **Category** | Core / Architecture |
 | **Demo Scene** | `Samples~/CoreExamples/Assets/Scenes/DemoScene.unity` |
-| **Video** | â€” |
+| **Video** | — |
 
 **What it does**
 
@@ -236,10 +236,10 @@ GameManager.Instance.AddScore(10);
 
 **Highlights**
 
-- Generic â€” one class works for every manager in your project
+- Generic — one class works for every manager in your project
 - Automatically destroys any duplicate instances at runtime
-- Persistent across scene loads â€” no need to re-find the instance
-- Zero external dependencies â€” drop-in ready
+- Persistent across scene loads — no need to re-find the instance
+- Zero external dependencies — drop-in ready
 
 ---
 
@@ -252,7 +252,7 @@ GameManager.Instance.AddScore(10);
 | **Location** | [`RuntimeMechanics/Dialogue/2. GenericAndScalableDialogueSystem/`](https://github.com/vijit101/UnityMechanicsFramework/tree/main/RuntimeMechanics/Dailogue/2.%20GenericAndScalableDialogueSystem) |
 | **Category** | Dialogue / Narrative |
 | **Demo Scene** | `Samples~/DialogueExample/Assets/Scenes/DemoScene.unity` |
-| **Video** | [â–¶ Watch Tutorial](https://github.com/vijit101/UnityMechanicsFramework/tree/main/Samples~/dailogueSample/Video) |
+| **Video** | [▶ Watch Tutorial](https://github.com/vijit101/UnityMechanicsFramework/tree/main/Samples~/dailogueSample/Video) |
 
 **What it does**
 
@@ -279,7 +279,7 @@ dialogueSystem.StartDialogue(npcDatabase, onComplete: () =>
 
 **Highlights**
 
-- Fully data-driven â€” all dialogue lives in ScriptableObject assets, not in code
+- Fully data-driven — all dialogue lives in ScriptableObject assets, not in code
 - Supports branching and multi-path dialogue trees
 - Clean separation between data (`DialogueDatabase`) and logic (`DialogueSystem`)
 - Add new conversations without touching any existing scripts
@@ -296,7 +296,7 @@ dialogueSystem.StartDialogue(npcDatabase, onComplete: () =>
 | **Location** | `Runtime/Systems/SaveSystem/Scripts/` |
 | **Category** | Systems / Persistence |
 | **Demo Scene** | `Samples~/SaveSystem/SaveSystem_Demo.zip` |
-| **Video** | [â–¶ Watch](Samples~/SaveSystem/SaveSystem_Video.zip) |
+| **Video** | [▶ Watch](Samples~/SaveSystem/SaveSystem_Video.zip) |
 
 **What it does**
 
@@ -335,11 +335,11 @@ SaveSystem_UMFOSS.Instance.Load("Slot1");
 
 **Highlights**
 
-- Generic â€” any script implements three interface methods and is automatically saved
-- Version migration â€” old save files survive game updates without data loss
+- Generic — any script implements three interface methods and is automatically saved
+- Version migration — old save files survive game updates without data loss
 - Multiple save slots with independent files (Slot1, Slot2, AutoSave)
 - Optional XOR encryption for anti-tamper
-- Zero external dependencies â€” uses Unity's JsonUtility with a custom SerializableDictionary
+- Zero external dependencies — uses Unity's JsonUtility with a custom SerializableDictionary
 - Full ScriptExplainer with line-by-line code explanation and Integration Guide
 
 ---
@@ -361,7 +361,7 @@ Delete this comment block before committing.
 | **Location** | `Runtime/YourFeatureGroup/YourMechanicScript.cs` |
 | **Category** | Movement / Combat / UI / Core / etc. |
 | **Demo Scene** | `Samples~/YourMechanicName/Assets/Scenes/DemoScene.unity` |
-| **Video** | [â–¶ Watch Walkthrough](YOUR_VIDEO_LINK_HERE) |
+| **Video** | [▶ Watch Walkthrough](YOUR_VIDEO_LINK_HERE) |
 
 **What it does**
 
@@ -372,7 +372,7 @@ What type of game would use this?
 
 ```csharp
 // A minimal working code example showing how to drop this into a project.
-// Show the most common use case â€” keep it short and clear.
+// Show the most common use case — keep it short and clear.
 ```
 
 **Highlights**
@@ -382,7 +382,7 @@ What type of game would use this?
 - Key learning value (what pattern or concept does this teach?)
 
 Also add a row to the Quick Navigation table above:
-| N | [Your Mechanic Name](#n-your-mechanic-name) | Your Name | Category | [â–¶ Watch](YOUR_VIDEO_LINK) |
+| N | [Your Mechanic Name](#n-your-mechanic-name) | Your Name | Category | [▶ Watch](YOUR_VIDEO_LINK) |
 
 ================================================================
 -->
@@ -395,17 +395,17 @@ All scripts use `GameplayMechanicsUMFOSS` as the base namespace, extended by fea
 
 | Namespace | Purpose | Status |
 |---|---|---|
-| `GameplayMechanicsUMFOSS.Core` | MonoSingleton, EventBus, StateMachine | âœ… Active |
-| `GameplayMechanicsUMFOSS.Physics` | IPhysicsAdapter, 2D/3D adapters | âœ… Active |
-| `GameplayMechanicsUMFOSS.Movement` | Jump, Dash, WallSlide | âœ… Active |
-| `GameplayMechanicsUMFOSS.Dialogue` | DialogueSystem, nodes, database | âœ… Active |
-| `GameplayMechanicsUMFOSS.Input` | InputAdapter | âœ… Active |
-| `GameplayMechanicsUMFOSS.Utils` | TimerUtility, helpers | âœ… Active |
-| `GameplayMechanicsUMFOSS.Inventory` | Item systems, loot, equipment | ðŸ”“ Open for contribution |
-| `GameplayMechanicsUMFOSS.Combat` | Hitboxes, damage, status effects | ðŸ”“ Open for contribution |
-| `GameplayMechanicsUMFOSS.UI` | HUD, menus, tooltips | ðŸ”“ Open for contribution |
-| `GameplayMechanicsUMFOSS.AI` | Patrol, pathfinding, decisions | ðŸ”“ Open for contribution |
-| `GameplayMechanicsUMFOSS.Systems` | Save/load, audio, scene management | âœ… Active |
+| `GameplayMechanicsUMFOSS.Core` | MonoSingleton, EventBus, StateMachine | ✅ Active |
+| `GameplayMechanicsUMFOSS.Physics` | IPhysicsAdapter, 2D/3D adapters | ✅ Active |
+| `GameplayMechanicsUMFOSS.Movement` | Jump, Dash, WallSlide | ✅ Active |
+| `GameplayMechanicsUMFOSS.Dialogue` | DialogueSystem, nodes, database | ✅ Active |
+| `GameplayMechanicsUMFOSS.Input` | InputAdapter | ✅ Active |
+| `GameplayMechanicsUMFOSS.Utils` | TimerUtility, helpers | ✅ Active |
+| `GameplayMechanicsUMFOSS.Inventory` | Item systems, loot, equipment | 🔓 Open for contribution |
+| `GameplayMechanicsUMFOSS.Combat` | Hitboxes, damage, status effects | 🔓 Open for contribution |
+| `GameplayMechanicsUMFOSS.UI` | HUD, menus, tooltips | 🔓 Open for contribution |
+| `GameplayMechanicsUMFOSS.AI` | Patrol, pathfinding, decisions | 🔓 Open for contribution |
+| `GameplayMechanicsUMFOSS.Systems` | Save/load, audio, scene management | ✅ Active |
 
 ---
 
@@ -414,9 +414,9 @@ All scripts use `GameplayMechanicsUMFOSS` as the base namespace, extended by fea
 | Unity Version | Status |
 |---|---|
 | Unity 2020.x and below | âŒ Not supported |
-| Unity 2021.3 LTS | âœ… Minimum supported |
-| Unity 2022.3 LTS | âœ… Recommended |
-| Unity 6 | âœ… Supported |
+| Unity 2021.3 LTS | ✅ Minimum supported |
+| Unity 2022.3 LTS | ✅ Recommended |
+| Unity 6 | ✅ Supported |
 
 **Additional notes:**
 - All mechanics target **2D games** by default. But some Issues and PR's  are beyond 2d or 3d that can be used by all. The `IPhysicsAdapter` layer makes extending to 3D straightforward without modifying mechanic code
@@ -433,12 +433,12 @@ This library grows with every Pull Request. Every mechanic you contribute is per
 **The contribution flow at a Glance (See details in Contributing.MD):**
 
 ```
-1.  Open an Issue  â†’  label: mechanic-proposal  â†’  describe what you want to build
+1.  Open an Issue  →  label: mechanic-proposal  →  describe what you want to build
 2.  Fork the repo and create a branch:  mechanic/your-mechanic-name
 3.  Build your mechanic inside  Runtime/
 4.  Create a self-contained demo scene inside  Samples~/
 5.  Write  ScriptExplainer.txt  (line-by-line code explanation)
-6.  Record  Demo.mp4  (video walkthrough â€” mandatory)
+6.  Record  Demo.mp4  (video walkthrough — mandatory)
 7.  Add your entry to the Mechanics Library in this README
 8.  Open a PR titled:  [Mechanic] Add Your Mechanic Name
 ```
